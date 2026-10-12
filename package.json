@@ -6,7 +6,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@cap-js/hana": "^3",
     "@sap/cds": "^10",
+    "@sap/xssec": "^4",
     "express": "^5"
   },
   "devDependencies": {
@@ -14,5 +16,12 @@
   },
   "scripts": {
     "start": "cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      }
+    }
   }
 }
