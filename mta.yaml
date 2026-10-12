@@ -9,12 +9,14 @@ build-parameters:
     - builder: custom
       commands:
         - npx cds build --production
+        - npm ci
 modules:
   - name: CAP-Workshop-srv
     type: nodejs
     path: gen/srv
     parameters:
       buildpack: nodejs_buildpack
+      instances: 1
     build-parameters:
       builder: npm
     provides:
@@ -23,20 +25,15 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: CAP-Workshop-auth
-      - name: CAP-Workshop-postgres
+      - name: CAP-Workshop-db
 
-  - name: CAP-Workshop-postgres-deployer
-    type: nodejs
-    path: gen/pg
+  - name: CAP-Workshop-db-deployer
+    type: hdb
+    path: gen/db
     parameters:
       buildpack: nodejs_buildpack
-      no-route: true
-      no-start: true
-      tasks:
-        - name: deploy-to-postgresql
-          command: npm start
     requires:
-      - name: CAP-Workshop-postgres
+      - name: CAP-Workshop-db
 
 resources:
   - name: CAP-Workshop-auth
@@ -48,8 +45,17 @@ resources:
       config:
         xsappname: CAP-Workshop-${org}-${space}
         tenant-mode: dedicated
-  - name: CAP-Workshop-postgres
-    type: org.cloudfoundry.managed-service
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+        role-collections:
+          - name: 'Administrator (CAP-Workshop ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Administrator'
+  - name: CAP-Workshop-db
+    type: com.sap.xs.hdi-container
     parameters:
-      service: postgresql-db
-      service-plan: trial
+      service: hana
+      service-plan: hdi-shared
