@@ -5,12 +5,12 @@ class OrderService extends cds.ApplicationService {
         const {Orders, Books} = cds.entities("com.bookshop");
 
         this.on("cancel", "Orders", async (req) => {
-            const orderId = req.params[0];
+            const orderId = req.params[0].ID;
             UPDATE(Orders).where({ ID: orderId }).with({status: -1});
         })
 
         this.on("submit", "Orders", async (req) => {
-            const orderId = req.params[0];
+            const orderId = req.params[0].ID;
             const order = await SELECT.one.from(Orders).where({ID: orderId})
             if(order.status !== 0) {
                 req.reject(400, `Order with status ${order.status} cannot be submitted`)
@@ -19,7 +19,7 @@ class OrderService extends cds.ApplicationService {
         })
 
         this.on("getTotal", "Orders", async (req) => {
-            const orderId = req.params[0];
+            const orderId = req.params[0].ID;
             const orderWithItems = await SELECT.one.from(Orders, order => {
                 order.items(item => {
                     item.amount, item.book`*`
