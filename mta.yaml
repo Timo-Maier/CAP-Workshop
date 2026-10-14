@@ -43,7 +43,7 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: CAP-Workshop-${org}-${space}
+        xsappname: CAP-Workshop
         tenant-mode: dedicated
         oauth2-configuration:
           credential-types:
